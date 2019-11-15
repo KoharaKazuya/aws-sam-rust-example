@@ -1,0 +1,25 @@
+#!/bin/sh
+
+set -eu
+
+S3_SAM_BUCKET="<YOUR_S3_BUCKET>"
+CFN_STACK_NAME="<YOUR_CLOUDFORMATION_STACK_NAME>"
+
+cd "$(dirname "$0")/../"
+
+docker run --rm \
+	-v "$PWD:/code" \
+	-v "$HOME/.cargo/registry:/root/.cargo/registry" \
+	-v "$HOME/.cargo/git:/root/.cargo/git" \
+	softprops/lambda-rust
+unzip \
+	-o ./target/lambda/release/sam-rust-example.zip \
+	-d ./app/
+
+sam package \
+	--output-template-file ./packaged.yaml \
+	--s3-bucket "S3_SAM_BUCKET"
+sam deploy \
+	--template-file ./packaged.yaml \
+	--stack-name "CFN_STACK_NAME" \
+	--capabilities CAPABILITY_IAM

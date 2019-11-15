@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  SAMRustExampleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: app/
+      Handler: bootstrap
+      Runtime: provided
+      Events:
+        RootGet:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+
+Outputs:
+  SAMRustExampleAPI:
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
